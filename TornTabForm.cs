@@ -10,7 +10,7 @@ using Win32Interop.Enums;
 using Win32Interop.Methods;
 using Win32Interop.Structs;
 
-namespace Stratman.Windows.Forms.TitleBarTabs
+namespace EasyTabs
 {
 	/// <summary>
 	/// Contains a semi-transparent window with a thumbnail of a tab that has been torn away from its parent window.  This thumbnail will follow the cursor
@@ -18,6 +18,9 @@ namespace Stratman.Windows.Forms.TitleBarTabs
 	/// </summary>
 	public class TornTabForm : Form
 	{
+		/// <summary>Window that contains the actual thumbnail image data.</summary>
+		private readonly LayeredWindow _layeredWindow;
+
 		/// <summary>Offset of the cursor within the torn tab representation while dragging.</summary>
 		protected Point _cursorOffset;
 
@@ -32,9 +35,6 @@ namespace Stratman.Windows.Forms.TitleBarTabs
 
 		/// <summary>Flag indicating whether or not the constructor has finished running.</summary>
 		private bool _initialized;
-
-		/// <summary>Window that contains the actual thumbnail image data.</summary>
-		private LayeredWindow _layeredWindow;
 
 		/// <summary>Thumbnail of the tab we are dragging.</summary>
 		protected Bitmap _tabThumbnail;
@@ -182,7 +182,9 @@ namespace Stratman.Windows.Forms.TitleBarTabs
 		public void UpdateLayeredBackground()
 		{
 			if (_tabThumbnail == null || !_initialized)
+			{
 				return;
+			}
 
 			byte opacity = (byte) (Opacity * 255);
 			_layeredWindow.UpdateWindow(

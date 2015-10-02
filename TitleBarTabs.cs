@@ -13,7 +13,7 @@ using Win32Interop.Structs;
 using Point = System.Drawing.Point;
 using Size = System.Drawing.Size;
 
-namespace Stratman.Windows.Forms.TitleBarTabs
+namespace EasyTabs
 {
 	/// <summary>
 	/// Base class that contains the functionality to render tabs within a WinForms application's title bar area. This  is done through a borderless overlay
@@ -107,7 +107,9 @@ namespace Stratman.Windows.Forms.TitleBarTabs
 				if (!_aeroPeekEnabled)
 				{
 					foreach (TitleBarTab tab in Tabs)
+					{
 						TaskbarManager.Instance.TabbedThumbnail.RemoveThumbnailPreview(tab.Content);
+					}
 
 					_previews.Clear();
 				}
@@ -115,10 +117,14 @@ namespace Stratman.Windows.Forms.TitleBarTabs
 				else
 				{
 					foreach (TitleBarTab tab in Tabs)
+					{
 						CreateThumbnailPreview(tab);
+					}
 
 					if (SelectedTab != null)
+					{
 						TaskbarManager.Instance.TabbedThumbnail.SetActiveTab(SelectedTab.Content);
+					}
 				}
 			}
 		}
@@ -188,7 +194,9 @@ namespace Stratman.Windows.Forms.TitleBarTabs
 
 					// If the subscribers to the event cancelled it, return before we do anything else
 					if (e.Cancel)
+					{
 						return;
+					}
 
 					selectedTab.Active = false;
 
@@ -216,7 +224,9 @@ namespace Stratman.Windows.Forms.TitleBarTabs
 
 					// If the subscribers to the event cancelled it, return before we do anything else
 					if (e.Cancel)
+					{
 						return;
+					}
 
 					Tabs[value].Active = true;
 
@@ -231,7 +241,9 @@ namespace Stratman.Windows.Forms.TitleBarTabs
 				}
 
 				if (_overlay != null)
+				{
 					_overlay.Render();
+				}
 			}
 		}
 
@@ -313,15 +325,21 @@ namespace Stratman.Windows.Forms.TitleBarTabs
 		protected void SetFrameSize()
 		{
 			if (TabRenderer == null || WindowState == FormWindowState.Minimized)
+			{
 				return;
+			}
 
 			int topPadding;
 
 			if (WindowState == FormWindowState.Maximized)
+			{
 				topPadding = TabRenderer.TabHeight - SystemInformation.CaptionHeight;
+			}
 
 			else
+			{
 				topPadding = (TabRenderer.TabHeight + SystemInformation.CaptionButtonSize.Height) - SystemInformation.CaptionHeight;
+			}
 
 			Padding = new Padding(
 				Padding.Left, topPadding > 0
@@ -350,7 +368,9 @@ namespace Stratman.Windows.Forms.TitleBarTabs
 				foreach (
 					TabbedThumbnail preview in
 						Tabs.Select(tab => TaskbarManager.Instance.TabbedThumbnail.GetThumbnailPreview(tab.Content)).Where(preview => preview != null))
+				{
 					preview.PeekOffset = new Vector(Padding.Left, Padding.Top - 1);
+				}
 			}
 		}
 
@@ -381,7 +401,9 @@ namespace Stratman.Windows.Forms.TitleBarTabs
 		protected internal void OnTabClicked(TitleBarTabEventArgs e)
 		{
 			if (TabClicked != null)
+			{
 				TabClicked(this, e);
+			}
 		}
 
 		/// <summary>
@@ -392,10 +414,14 @@ namespace Stratman.Windows.Forms.TitleBarTabs
 		protected void OnTabDeselecting(TitleBarTabCancelEventArgs e)
 		{
 			if (_previousActiveTab != null && AeroPeekEnabled)
+			{
 				UpdateTabThumbnail(_previousActiveTab);
+			}
 
 			if (TabDeselecting != null)
+			{
 				TabDeselecting(this, e);
+			}
 		}
 
 		/// <summary>Generate a new thumbnail image for <paramref name="tab" />.</summary>
@@ -405,7 +431,9 @@ namespace Stratman.Windows.Forms.TitleBarTabs
 			TabbedThumbnail preview = TaskbarManager.Instance.TabbedThumbnail.GetThumbnailPreview(tab.Content);
 
 			if (preview == null)
+			{
 				return;
+			}
 
 			Bitmap bitmap = TabbedThumbnailScreenCapture.GrabWindowBitmap(tab.Content.Handle, tab.Content.Size);
 
@@ -413,7 +441,9 @@ namespace Stratman.Windows.Forms.TitleBarTabs
 
 			// If we already had a preview image for the tab, dispose of it
 			if (_previews.ContainsKey(tab.Content) && _previews[tab.Content] != null)
+			{
 				_previews[tab.Content].Dispose();
+			}
 
 			_previews[tab.Content] = bitmap;
 		}
@@ -423,7 +453,9 @@ namespace Stratman.Windows.Forms.TitleBarTabs
 		protected void OnTabDeselected(TitleBarTabEventArgs e)
 		{
 			if (TabDeselected != null)
+			{
 				TabDeselected(this, e);
+			}
 		}
 
 		/// <summary>Callback for the <see cref="TabSelecting" /> event.</summary>
@@ -431,7 +463,9 @@ namespace Stratman.Windows.Forms.TitleBarTabs
 		protected void OnTabSelecting(TitleBarTabCancelEventArgs e)
 		{
 			if (TabSelecting != null)
+			{
 				TabSelecting(this, e);
+			}
 		}
 
 		/// <summary>
@@ -442,12 +476,16 @@ namespace Stratman.Windows.Forms.TitleBarTabs
 		protected void OnTabSelected(TitleBarTabEventArgs e)
 		{
 			if (SelectedTabIndex != -1 && _previews.ContainsKey(SelectedTab.Content) && AeroPeekEnabled)
+			{
 				TaskbarManager.Instance.TabbedThumbnail.SetActiveTab(SelectedTab.Content);
+			}
 
 			_previousActiveTab = SelectedTab;
 
 			if (TabSelected != null)
+			{
 				TabSelected(this, e);
+			}
 		}
 
 		/// <summary>
@@ -461,7 +499,9 @@ namespace Stratman.Windows.Forms.TitleBarTabs
 			foreach (
 				TitleBarTab rdcWindow in Tabs.Where(rdcWindow => rdcWindow.Content.Handle == e.WindowHandle && _previews.ContainsKey(rdcWindow.Content)))
 			{
-				e.SetImage(_previews[rdcWindow.Content]);
+				TabbedThumbnail preview = TaskbarManager.Instance.TabbedThumbnail.GetThumbnailPreview(rdcWindow.Content);
+				preview.SetImage(_previews[rdcWindow.Content]);
+
 				break;
 			}
 		}
@@ -484,7 +524,9 @@ namespace Stratman.Windows.Forms.TitleBarTabs
 		public void ResizeTabContents(TitleBarTab tab = null)
 		{
 			if (tab == null)
+			{
 				tab = SelectedTab;
+			}
 
 			if (tab != null)
 			{
@@ -525,10 +567,14 @@ namespace Stratman.Windows.Forms.TitleBarTabs
 
 			// Restore the window if it was minimized
 			if (WindowState == FormWindowState.Minimized)
+			{
 				User32.ShowWindow(Handle, 3);
+			}
 
 			else
+			{
 				Focus();
+			}
 		}
 
 		/// <summary>
@@ -541,10 +587,7 @@ namespace Stratman.Windows.Forms.TitleBarTabs
 		{
 			foreach (TitleBarTab tab in Tabs.Where(tab => tab.Content.Handle == e.WindowHandle))
 			{
-				tab.Content.Close();
-
-				if (e.TabbedThumbnail != null)
-					TaskbarManager.Instance.TabbedThumbnail.RemoveThumbnailPreview(e.TabbedThumbnail);
+				CloseTab(tab);
 
 				break;
 			}
@@ -567,12 +610,16 @@ namespace Stratman.Windows.Forms.TitleBarTabs
 					currentTab.Closing += TitleBarTabs_Closing;
 
 					if (AeroPeekEnabled)
+					{
 						TaskbarManager.Instance.TabbedThumbnail.SetActiveTab(CreateThumbnailPreview(currentTab));
+					}
 				}
 			}
 
 			if (_overlay != null)
+			{
 				_overlay.Render(true);
+			}
 		}
 
 		/// <summary>
@@ -583,13 +630,21 @@ namespace Stratman.Windows.Forms.TitleBarTabs
 		/// <returns>Thumbnail created for <paramref name="tab" />.</returns>
 		protected virtual TabbedThumbnail CreateThumbnailPreview(TitleBarTab tab)
 		{
-			TabbedThumbnail preview = new TabbedThumbnail(Handle, tab.Content)
-			                          {
-				                          Title = tab.Content.Text,
-				                          Tooltip = tab.Content.Text
-			                          };
+			TabbedThumbnail preview = TaskbarManager.Instance.TabbedThumbnail.GetThumbnailPreview(tab.Content);
 
-			preview.SetWindowIcon(tab.Content.Icon);
+			if (preview != null)
+			{
+				TaskbarManager.Instance.TabbedThumbnail.RemoveThumbnailPreview(tab.Content);
+			}
+
+			preview = new TabbedThumbnail(Handle, tab.Content)
+			          {
+				          Title = tab.Content.Text,
+				          Tooltip = tab.Content.Text
+			          };
+
+			preview.SetWindowIcon((Icon)tab.Content.Icon.Clone());
+
 			preview.TabbedThumbnailActivated += preview_TabbedThumbnailActivated;
 			preview.TabbedThumbnailClosed += preview_TabbedThumbnailClosed;
 			preview.TabbedThumbnailBitmapRequested += preview_TabbedThumbnailBitmapRequested;
@@ -598,6 +653,33 @@ namespace Stratman.Windows.Forms.TitleBarTabs
 			TaskbarManager.Instance.TabbedThumbnail.AddThumbnailPreview(preview);
 
 			return preview;
+		}
+
+		/// <summary>
+		/// When a child tab updates its <see cref="Form.Icon"/> property, it should call this method to update the icon in the AeroPeek preview.
+		/// </summary>
+		/// <param name="tab">Tab whose icon was updated.</param>
+		/// <param name="icon">The new icon to use.  If this is left as null, we use <see cref="Form.Icon"/> on <paramref name="tab"/>.</param>
+		public virtual void UpdateThumbnailPreviewIcon(TitleBarTab tab, Icon icon = null)
+		{
+			if (!AeroPeekEnabled)
+			{
+				return;
+			}
+
+			TabbedThumbnail preview = TaskbarManager.Instance.TabbedThumbnail.GetThumbnailPreview(tab.Content);
+
+			if (preview == null)
+			{
+				return;
+			}
+
+			if (icon == null)
+			{
+				icon = tab.Content.Icon;
+			}
+
+			preview.SetWindowIcon((Icon)icon.Clone());
 		}
 
 		/// <summary>
@@ -613,11 +695,15 @@ namespace Stratman.Windows.Forms.TitleBarTabs
 				TabbedThumbnail preview = TaskbarManager.Instance.TabbedThumbnail.GetThumbnailPreview((Form) sender);
 
 				if (preview != null)
+				{
 					preview.Title = (sender as Form).Text;
+				}
 			}
 
 			if (_overlay != null)
+			{
 				_overlay.Render(true);
+			}
 		}
 
 		/// <summary>
@@ -628,10 +714,29 @@ namespace Stratman.Windows.Forms.TitleBarTabs
 		/// <param name="e">Arguments associated with the event.</param>
 		private void TitleBarTabs_Closing(object sender, CancelEventArgs e)
 		{
-			CloseTab((TitleBarTab) sender);
+			TitleBarTab tab = (TitleBarTab) sender;
+			CloseTab(tab);
+
+			if (!tab.Content.IsDisposed && AeroPeekEnabled)
+			{
+				TaskbarManager.Instance.TabbedThumbnail.RemoveThumbnailPreview(tab.Content);
+			}
 
 			if (_overlay != null)
+			{
 				_overlay.Render(true);
+			}
+		}
+
+		/// <summary>
+		/// Calls <see cref="TitleBarTabsOverlay.Render(bool)"/> on <see cref="_overlay"/> to force a redrawing of the tabs.
+		/// </summary>
+		public void RedrawTabs()
+		{
+			if (_overlay != null)
+			{
+				_overlay.Render(true);
+			}
 		}
 
 		/// <summary>
@@ -643,7 +748,9 @@ namespace Stratman.Windows.Forms.TitleBarTabs
 		{
 			// If no tab renderer has been set yet or the window state hasn't changed, don't do anything
 			if (_previousWindowState != null && WindowState != _previousWindowState.Value)
+			{
 				SetFrameSize();
+			}
 
 			_previousWindowState = WindowState;
 
@@ -678,7 +785,9 @@ namespace Stratman.Windows.Forms.TitleBarTabs
 					// If they were over the minimize/maximize/close buttons or the system menu, let the message pass
 					if (!(hitResult == HT.HTCLOSE || hitResult == HT.HTMINBUTTON || hitResult == HT.HTMAXBUTTON || hitResult == HT.HTMENU ||
 					      hitResult == HT.HTSYSMENU))
+					{
 						m.Result = new IntPtr((int) HitTest(m));
+					}
 
 					callDwp = false;
 
@@ -687,13 +796,17 @@ namespace Stratman.Windows.Forms.TitleBarTabs
 					// Catch the case where the user is clicking the minimize button and use this opportunity to update the AeroPeek thumbnail for the current tab
 				case WM.WM_NCLBUTTONDOWN:
 					if (((HT) m.WParam.ToInt32()) == HT.HTMINBUTTON && AeroPeekEnabled && SelectedTab != null)
+					{
 						UpdateTabThumbnail(SelectedTab);
+					}
 
 					break;
 			}
 
 			if (callDwp)
+			{
 				base.WndProc(ref m);
+			}
 		}
 
 		/// <summary>Calls <see cref="CreateTab" />, adds the resulting tab to the <see cref="Tabs" /> collection, and activates it.</summary>
@@ -717,13 +830,19 @@ namespace Stratman.Windows.Forms.TitleBarTabs
 			Tabs.Remove(closingTab);
 
 			if (selectedTabIndex > removeIndex)
+			{
 				SelectedTabIndex = selectedTabIndex - 1;
+			}
 
 			else if (selectedTabIndex == removeIndex)
+			{
 				SelectedTabIndex = Math.Min(selectedTabIndex, Tabs.Count - 1);
+			}
 
 			else
+			{
 				SelectedTabIndex = selectedTabIndex;
+			}
 
 			if (_previews.ContainsKey(closingTab.Content))
 			{
@@ -732,13 +851,14 @@ namespace Stratman.Windows.Forms.TitleBarTabs
 			}
 
 			if (_previousActiveTab != null && closingTab.Content == _previousActiveTab.Content)
+			{
 				_previousActiveTab = null;
-
-			if (!closingTab.Content.IsDisposed && AeroPeekEnabled)
-				TaskbarManager.Instance.TabbedThumbnail.RemoveThumbnailPreview(closingTab.Content);
+			}
 
 			if (Tabs.Count == 0 && ExitOnLastTabClose)
+			{
 				Close();
+			}
 		}
 
 		private HT HitTest(Message m)
@@ -773,14 +893,20 @@ namespace Stratman.Windows.Forms.TitleBarTabs
 			}
 
 			else if (point.Y < area.Bottom && point.Y > area.Bottom - SystemInformation.VerticalResizeBorderThickness)
+			{
 				row = 2;
+			}
 
 			// Determine if we are on the left border or the right border
 			if (point.X >= area.Left && point.X < area.Left + SystemInformation.HorizontalResizeBorderThickness)
+			{
 				column = 0;
+			}
 
 			else if (point.X < area.Right && point.X >= area.Right - SystemInformation.HorizontalResizeBorderThickness)
+			{
 				column = 2;
+			}
 
 			HT[,] hitTests =
 			{

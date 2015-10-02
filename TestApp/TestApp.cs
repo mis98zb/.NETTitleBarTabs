@@ -1,14 +1,14 @@
-﻿using Stratman.Windows.Forms.TitleBarTabs;
+﻿using EasyTabs;
 
 namespace TestApp
 {
-    public partial class TestApp : TitleBarTabs
+	public partial class TestApp : TitleBarTabs
     {
         public TestApp()
         {
             InitializeComponent();
 
-			AeroPeekEnabled = false;
+            AeroPeekEnabled = true;
             TabRenderer = new ChromeTabRenderer(this);
             Icon = Resources.DefaultIcon;
         }

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Windows.Forms;
 
-namespace Stratman.Windows.Forms.TitleBarTabs
+namespace EasyTabs
 {
 	/// <summary>
 	/// Application context to use when starting a <see cref="TitleBarTabs" /> application via <see cref="Application.Run(ApplicationContext)" />.  Used to
@@ -26,7 +26,9 @@ namespace Stratman.Windows.Forms.TitleBarTabs
 		public void Start(TitleBarTabs initialFormInstance)
 		{
 			if (initialFormInstance.IsClosing)
+			{
 				ExitThread();
+			}
 
 			else
 			{
@@ -62,7 +64,9 @@ namespace Stratman.Windows.Forms.TitleBarTabs
 			_openWindows.Remove((TitleBarTabs) sender);
 
 			if (_openWindows.Count == 0)
+			{
 				ExitThread();
+			}
 		}
 	}
 }

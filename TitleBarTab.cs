@@ -3,7 +3,7 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
 
-namespace Stratman.Windows.Forms.TitleBarTabs
+namespace EasyTabs
 {
 	/// <summary>Wraps a <see cref="Form" /> instance (<see cref="_content" />), that represents the content that should be displayed within a tab instance.</summary>
 	public class TitleBarTab
@@ -38,7 +38,9 @@ namespace Stratman.Windows.Forms.TitleBarTabs
 				_parent = value;
 
 				if (_content != null)
+				{
 					_content.Parent = _parent;
+				}
 			}
 		}
 
@@ -174,7 +176,9 @@ namespace Stratman.Windows.Forms.TitleBarTabs
 		private void Content_TextChanged(object sender, EventArgs e)
 		{
 			if (TextChanged != null)
+			{
 				TextChanged(this, e);
+			}
 		}
 
 		/// <summary>
@@ -186,7 +190,9 @@ namespace Stratman.Windows.Forms.TitleBarTabs
 		protected void Content_Closing(object sender, CancelEventArgs e)
 		{
 			if (Closing != null)
+			{
 				Closing(this, e);
+			}
 		}
 
 		/// <summary>Unsubscribes the tab from any event handlers that may have been attached to its <see cref="Closing" /> or <see cref="TextChanged" /> events.</summary>
